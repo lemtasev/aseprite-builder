@@ -79,8 +79,11 @@ jobs:
           # 拉取指定版本代码
           git clone --recurse-submodules -j8 https://github.com/aseprite/aseprite --branch ${{ needs.create-release.outputs.release-tag }}
           cd aseprite
-          # 修改版本号配置文件（解决1.x-dev），${变量#v}删除变量开头第一个v
-          sed -i "s/set(VERSION \"1.x-dev\")/set(VERSION \"${{ needs.create-release.outputs.release-tag#v }}\")/g" src/ver/CMakeLists.txt
+          RELEASE_TAG="${{ needs.create-release.outputs.release-tag }}"
+          # ${变量#v}删除变量开头第一个v
+          CLEAN_TAG="${RELEASE_TAG#v}"
+          # 修改版本号配置文件（解决1.x-dev）
+          sed -i "s/set(VERSION \"1.x-dev\")/set(VERSION \"${CLEAN_TAG}\")/g" src/ver/CMakeLists.txt
           # 查看文件内容，确认版本号已替换
           cat src/ver/CMakeLists.txt | grep "set(VERSION"
       
