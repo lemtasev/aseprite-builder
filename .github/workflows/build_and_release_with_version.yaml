@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:  # 仅新增这一段版本输入配置
       aseprite_version:
-        description: '自定义Aseprite版本号（如 v1.3.16、v1.3.11-beta1，参考：https://github.com/aseprite/aseprite/tags），留空则自动拉取最新'
+        description: '自定义Aseprite版本号（如 v1.3.16、v1.3.17-beta1，参考：https://github.com/aseprite/aseprite/tags），留空则自动拉取最新'
         required: false
         default: ''
 env:
@@ -59,6 +59,7 @@ jobs:
     strategy:
         matrix:
           # os: [ windows-latest, ubuntu-latest, macOS-latest ]
+          # 修改默认只编译win平台
           os: [ windows-latest ]
         fail-fast: false
     steps:
@@ -78,9 +79,8 @@ jobs:
           # 拉取指定版本代码
           git clone --recurse-submodules -j8 https://github.com/aseprite/aseprite --branch ${{ needs.create-release.outputs.release-tag }}
           cd aseprite
-          # 核心：修改版本号配置文件（解决1.x-dev）
-          sed -i "s/set(VERSION \"1.x-dev\")/set(VERSION \"${{ needs.create-release.outputs.release-tag }}\")/g" src/ver/CMakeLists.txt
-          sed -i "s/set(VERSION \"\")/set(VERSION \"${{ needs.create-release.outputs.release-tag }}\")/g" src/ver/CMakeLists.txt
+          # 修改版本号配置文件（解决1.x-dev），${变量#v}删除变量开头第一个v
+          sed -i "s/set(VERSION \"1.x-dev\")/set(VERSION \"${{ needs.create-release.outputs.release-tag#v }}\")/g" src/ver/CMakeLists.txt
           # 查看文件内容，确认版本号已替换
           cat src/ver/CMakeLists.txt | grep "set(VERSION"
       
