@@ -79,10 +79,10 @@ jobs:
           git clone --recurse-submodules -j8 https://github.com/aseprite/aseprite --branch ${{ needs.create-release.outputs.release-tag }}
           cd aseprite
           # 核心：修改版本号配置文件（解决1.x-dev）
-          sed -i "s/set(VER_VERSION \"1.x-dev\")/set(VER_VERSION \"${{ needs.create-release.outputs.release-tag }}\")/g" src/ver/CMakeLists.txt
-          sed -i "s/set(VER_REVISION \"\")/set(VER_REVISION \"${{ needs.create-release.outputs.release-tag }}\")/g" src/ver/CMakeLists.txt
-          # 可选：生成VERSION.txt，双重保障
-          echo "${{ needs.create-release.outputs.release-tag }}" > VERSION.txt
+          sed -i "s/set(VERSION \"1.x-dev\")/set(VERSION \"${{ needs.create-release.outputs.release-tag }}\")/g" src/ver/CMakeLists.txt
+          sed -i "s/set(VERSION \"\")/set(VERSION \"${{ needs.create-release.outputs.release-tag }}\")/g" src/ver/CMakeLists.txt
+          # 查看文件内容，确认版本号已替换
+          cat src/ver/CMakeLists.txt | grep "set(VERSION"
       
       - name: Install Skia
         working-directory: aseprite
